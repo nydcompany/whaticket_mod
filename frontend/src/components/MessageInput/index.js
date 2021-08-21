@@ -636,16 +636,8 @@ const MessageInput = ({ ticketStatus }) => {
                       className={classes.messageAnswersWrapperItem}
                       key={index}
                     >
-                      <a
-                        onClick={() =>
-                          handleAnswersClick(
-                            value.shortcut,
-                            value.title,
-                            value.message
-                          )
-                        }
-                      >
-                        {(value.shortcut, value.title, value.message)}
+                      <a onClick={() => handleAnswersClick(value.message)}>
+                        {value.message}
                       </a>
                     </li>
                   );
