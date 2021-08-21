@@ -5,13 +5,13 @@ import { ToastContainer } from "react-toastify";
 import LoggedInLayout from "../layout";
 import Dashboard from "../pages/Dashboard/";
 import Tickets from "../pages/Tickets/";
-import Signup from "../pages/Signup/";
 import Login from "../pages/Login/";
 import Connections from "../pages/Connections/";
 import Settings from "../pages/Settings/";
 import Users from "../pages/Users";
 import Contacts from "../pages/Contacts/";
 import Queues from "../pages/Queues/";
+import Answers from "../pages/Answers/";
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
 import Route from "./Route";
@@ -22,7 +22,6 @@ const Routes = () => {
 			<AuthProvider>
 				<Switch>
 					<Route exact path="/login" component={Login} />
-					<Route exact path="/signup" component={Signup} />
 					<WhatsAppsProvider>
 						<LoggedInLayout>
 							<Route exact path="/" component={Dashboard} isPrivate />
@@ -36,6 +35,12 @@ const Routes = () => {
 								exact
 								path="/connections"
 								component={Connections}
+								isPrivate
+							/>
+														<Route
+								exact
+								path="/answers"
+								component={Answers}
 								isPrivate
 							/>
 							<Route exact path="/contacts" component={Contacts} isPrivate />

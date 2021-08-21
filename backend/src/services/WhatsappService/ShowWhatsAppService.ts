@@ -11,7 +11,9 @@ const ShowWhatsAppService = async (id: string | number): Promise<Whatsapp> => {
         attributes: ["id", "name", "color", "greetingMessage"]
       }
     ],
-    order: [["queues", "name", "ASC"]]
+    // order: [["queues", "name", "ASC"]]
+    // Alterar ordem das filas #176 by @cesarra https://github.com/canove/whaticket/issues/176
+    order: [["queues", "id", "ASC"]]
   });
 
   if (!whatsapp) {

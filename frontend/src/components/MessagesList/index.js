@@ -3,8 +3,9 @@ import React, { useState, useEffect, useReducer, useRef } from "react";
 import { isSameDay, parseISO, format } from "date-fns";
 import openSocket from "socket.io-client";
 import clsx from "clsx";
+import ReplyIcon from "@material-ui/icons/Reply";
 
-import { green } from "@material-ui/core/colors";
+import { green, blue } from "@material-ui/core/colors";
 import {
 	Button,
 	CircularProgress,
@@ -26,6 +27,7 @@ import ModalImageCors from "../ModalImageCors";
 import MessageOptionsMenu from "../MessageOptionsMenu";
 import whatsBackground from "../../assets/wa-background.png";
 
+import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 
@@ -179,6 +181,19 @@ const useStyles = makeStyles(theme => ({
 		fontWeight: 500,
 	},
 
+	messageForwarded: {
+		display: "flex",
+		alignItems: "center",
+	},
+
+	messageForwardedText: {
+		color: "gray"
+	},
+
+	mirroredIcon: {
+		transform: "scaleX(-1)",
+	},
+
 	textContentItem: {
 		overflowWrap: "break-word",
 		padding: "3px 80px 6px 6px",
@@ -240,7 +255,7 @@ const useStyles = makeStyles(theme => ({
 	},
 
 	ackDoneAllIcon: {
-		color: green[500],
+		color: blue[500],
 		fontSize: 18,
 		verticalAlign: "middle",
 		marginLeft: 4,
@@ -566,6 +581,12 @@ const MessagesList = ({ ticketId, isGroup }) => {
 										{message.contact?.name}
 									</span>
 								)}
+								{message.isForwarded && (
+									<div className={classes.messageForwarded}>
+										<ReplyIcon className={clsx(classes.mirroredIcon, classes.messageForwardedText)} />
+										<span className={classes.messageForwardedText}>{i18n.t("forwardMessage.text")}</span><br />
+									</div>
+								)}
 								{message.mediaUrl && checkMessageMedia(message)}
 								<div className={classes.textContentItem}>
 									{message.quotedMsg && renderQuotedMessage(message)}
@@ -606,6 +627,12 @@ const MessagesList = ({ ticketId, isGroup }) => {
 											className={classes.deletedIcon}
 										/>
 									)}
+									{message.isForwarded && (
+									<div className={classes.messageForwarded}>
+										<ReplyIcon className={clsx(classes.mirroredIcon, classes.messageForwardedText)} />
+										<span className={classes.messageForwardedText}>{i18n.t("forwardMessage.text")}</span><br />
+									</div>
+								)}
 									{message.quotedMsg && renderQuotedMessage(message)}
 									<MarkdownWrapper>{message.body}</MarkdownWrapper>
 									<span className={classes.timestamp}>

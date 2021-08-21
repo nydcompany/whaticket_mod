@@ -73,10 +73,17 @@ const verifyMediaMessage = async (
     throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
   }
 
-  if (!media.filename) {
-    const ext = media.mimetype.split("/")[1].split(";")[0];
-    media.filename = `${new Date().getTime()}.${ext}`;
-  }
+  // Arquivo recebido pelo contato com o mesmo nome.#167 by @jjsquady https://github.com/canove/whaticket/issues/167
+  /* Check if media not have a filename
+    if (!media.filename) {
+      const ext = media.mimetype.split("/")[1].split(";")[0];
+      media.filename = `${new Date().getTime()}.${ext}`;
+    }
+  */
+  let originalFilename = media.filename ? `-${media.filename}` : ''
+  // Always write a random filename
+  const ext = media.mimetype.split("/")[1].split(";")[0];
+  media.filename = `${new Date().getTime()}${originalFilename}.${ext}`;
 
   try {
     await writeFileAsync(

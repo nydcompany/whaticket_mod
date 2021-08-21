@@ -12,10 +12,9 @@ import TableRow from "@material-ui/core/TableRow";
 import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-
-import EditIcon from "@material-ui/icons/Edit";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import MainContainer from "../../components/MainContainer";
@@ -26,45 +25,45 @@ import Title from "../../components/Title";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
-import UserModal from "../../components/UserModal";
+import AnswersModal from "../../components/AnswersModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
 
 const reducer = (state, action) => {
-  if (action.type === "LOAD_USERS") {
-    const users = action.payload;
-    const newUsers = [];
+  if (action.type === "LOAD_ANSWERS") {
+    const answers = action.payload;
+    const newAnswers = [];
 
-    users.forEach((user) => {
-      const userIndex = state.findIndex((u) => u.id === user.id);
-      if (userIndex !== -1) {
-        state[userIndex] = user;
+    answers.forEach((answer) => {
+      const answerIndex = state.findIndex((u) => u.id === answer.id);
+      if (answerIndex !== -1) {
+        state[answerIndex] = answer;
       } else {
-        newUsers.push(user);
+        newAnswers.push(answer);
       }
     });
 
-    return [...state, ...newUsers];
+    return [...state, ...newAnswers];
   }
 
-  if (action.type === "UPDATE_USERS") {
-    const user = action.payload;
-    const userIndex = state.findIndex((u) => u.id === user.id);
+  if (action.type === "UPDATE_ANSWERS") {
+    const answer = action.payload;
+    const answerIndex = state.findIndex((u) => u.id === answer.id);
 
-    if (userIndex !== -1) {
-      state[userIndex] = user;
+    if (answerIndex !== -1) {
+      state[answerIndex] = answer;
       return [...state];
     } else {
-      return [user, ...state];
+      return [answer, ...state];
     }
   }
 
-  if (action.type === "DELETE_USER") {
-    const userId = action.payload;
+  if (action.type === "DELETE_ANSWER") {
+    const answerId = action.payload;
 
-    const userIndex = state.findIndex((u) => u.id === userId);
-    if (userIndex !== -1) {
-      state.splice(userIndex, 1);
+    const answerIndex = state.findIndex((u) => u.id === answerId);
+    if (answerIndex !== -1) {
+      state.splice(answerIndex, 1);
     }
     return [...state];
   }
@@ -87,20 +86,35 @@ const useStyles = makeStyles((theme) => ({
   extendedIcon: {
     marginRight: theme.spacing(1),
   },
+  customTableCell: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tooltip: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    fontSize: theme.typography.pxToRem(14),
+    border: "1px solid #dadde9",
+    maxWidth: 450,
+  },
+  tooltipPopper: {
+    textAlign: "center",
+  },
 }));
 
-const Users = () => {
+const Answers = () => {
   const classes = useStyles();
 
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [deletingUser, setDeletingUser] = useState(null);
-  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState(null);
+  const [deletingAnswers, setDeletingAnswers] = useState(null);
+  const [answersModalOpen, setAnswersModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
-  const [users, dispatch] = useReducer(reducer, []);
+  const [answers, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -110,19 +124,19 @@ const Users = () => {
   useEffect(() => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
-      const fetchUsers = async () => {
+      const fetchAnswers = async () => {
         try {
-          const { data } = await api.get("/users/", {
+          const { data } = await api.get("/answers/", {
             params: { searchParam, pageNumber },
           });
-          dispatch({ type: "LOAD_USERS", payload: data.users });
+          dispatch({ type: "LOAD_ANSWERS", payload: data.answers });
           setHasMore(data.hasMore);
           setLoading(false);
         } catch (err) {
           toastError(err);
         }
       };
-      fetchUsers();
+      fetchAnswers();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [searchParam, pageNumber]);
@@ -130,13 +144,13 @@ const Users = () => {
   useEffect(() => {
     const socket = openSocket(process.env.REACT_APP_BACKEND_URL);
 
-    socket.on("user", (data) => {
+    socket.on("answer", (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_USERS", payload: data.user });
+        dispatch({ type: "UPDATE_ANSWERS", payload: data.answer });
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_USER", payload: +data.userId });
+        dispatch({ type: "DELETE_ANSWER", payload: +data.answerId });
       }
     });
 
@@ -145,33 +159,33 @@ const Users = () => {
     };
   }, []);
 
-  const handleOpenUserModal = () => {
-    setSelectedUser(null);
-    setUserModalOpen(true);
+  const handleOpenAnswersModal = () => {
+    setSelectedAnswers(null);
+    setAnswersModalOpen(true);
   };
 
-  const handleCloseUserModal = () => {
-    setSelectedUser(null);
-    setUserModalOpen(false);
+  const handleCloseAnswersModal = () => {
+    setSelectedAnswers(null);
+    setAnswersModalOpen(false);
   };
 
   const handleSearch = (event) => {
     setSearchParam(event.target.value.toLowerCase());
   };
 
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setUserModalOpen(true);
+  const handleEditAnswers = (answer) => {
+    setSelectedAnswers(answer);
+    setAnswersModalOpen(true);
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteAnswers = async (answerId) => {
     try {
-      await api.delete(`/users/${userId}`);
-      toast.success(i18n.t("users.toasts.deleted"));
+      await api.delete(`/answers/${answerId}`);
+      toast.success(i18n.t("answers.toasts.deleted"));
     } catch (err) {
       toastError(err);
     }
-    setDeletingUser(null);
+    setDeletingAnswers(null);
     setSearchParam("");
     setPageNumber(1);
   };
@@ -192,25 +206,25 @@ const Users = () => {
     <MainContainer>
       <ConfirmationModal
         title={
-          deletingUser &&
-          `${i18n.t("users.confirmationModal.deleteTitle")} ${
-            deletingUser.name
+          deletingAnswers &&
+          `${i18n.t("answers.confirmationModal.deleteTitle")} ${
+            deletingAnswers.title
           }?`
         }
         open={confirmModalOpen}
         onClose={setConfirmModalOpen}
-        onConfirm={() => handleDeleteUser(deletingUser.id)}
+        onConfirm={() => handleDeleteAnswers(deletingAnswers.id)}
       >
-        {i18n.t("users.confirmationModal.deleteMessage")}
+        {i18n.t("answers.confirmationModal.deleteMessage")}
       </ConfirmationModal>
-      <UserModal
-        open={userModalOpen}
-        onClose={handleCloseUserModal}
+      <AnswersModal
+        open={answersModalOpen}
+        onClose={handleCloseAnswersModal}
         aria-labelledby="form-dialog-title"
-        userId={selectedUser && selectedUser.id}
+        answerId={selectedAnswers && selectedAnswers.id}
       />
       <MainHeader>
-        <Title>{i18n.t("users.title")}</Title>
+        <Title>{i18n.t("answers.title")}</Title>
         <MainHeaderButtonsWrapper>
           <TextField
             placeholder={i18n.t("contacts.searchPlaceholder")}
@@ -226,11 +240,11 @@ const Users = () => {
             }}
           />
           <Fab
-            variant="contained"
             color="primary"
             aria-label="add"
-            title={i18n.t("users.buttons.add")}
-            onClick={handleOpenUserModal}
+            title={i18n.t("answers.buttons.add")}
+            // className={classes.iconActions}
+            onClick={handleOpenAnswersModal}
           >
             <AddIcon />
           </Fab>
@@ -244,44 +258,46 @@ const Users = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center">{i18n.t("users.table.name")}</TableCell>
               <TableCell align="center">
-                {i18n.t("users.table.email")}
+                {i18n.t("answers.table.shortcut")}
               </TableCell>
               <TableCell align="center">
-                {i18n.t("users.table.profile")}
+                {i18n.t("answers.table.title")}
               </TableCell>
               <TableCell align="center">
-                {i18n.t("users.table.actions")}
+                {i18n.t("answers.table.message")}
+              </TableCell>
+              <TableCell align="center">
+                {i18n.t("answers.table.actions")}
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell align="center">{user.name}</TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">{user.profile}</TableCell>
+              {answers.map((answer) => (
+                <TableRow key={answer.id}>
+                  <TableCell align="center">{answer.shortcut}</TableCell>
+                  <TableCell align="center">{answer.title}</TableCell>
+                  <TableCell align="center">{answer.message}</TableCell>
                   <TableCell align="center">
                     <Fab
                       color="primary"
-                      title={"Editar Usuário"}
+                      title={i18n.t("answers.buttons.edit")}
                       className={classes.iconActions}
                       size="small"
-                      onClick={() => handleEditUser(user)}
+                      onClick={() => handleEditAnswers(answer)}
                     >
                       <EditIcon />
                     </Fab>
 
                     <Fab
                       color="secondary"
-                      title={"Excluir Usuário"}
+                      title={i18n.t("answers.buttons.delete")}
                       className={classes.iconActions}
                       size="small"
                       onClick={(e) => {
                         setConfirmModalOpen(true);
-                        setDeletingUser(user);
+                        setDeletingAnswers(answer);
                       }}
                     >
                       <DeleteIcon />
@@ -289,7 +305,7 @@ const Users = () => {
                   </TableCell>
                 </TableRow>
               ))}
-              {loading && <TableRowSkeleton columns={4} />}
+              {loading && <TableRowSkeleton columns={3} />}
             </>
           </TableBody>
         </Table>
@@ -298,4 +314,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Answers;
