@@ -243,7 +243,6 @@ const Answers = () => {
             color="primary"
             aria-label="add"
             title={i18n.t("answers.buttons.add")}
-            // className={classes.iconActions}
             onClick={handleOpenAnswersModal}
           >
             <AddIcon />

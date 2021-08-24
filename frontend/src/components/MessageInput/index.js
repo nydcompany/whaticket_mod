@@ -324,8 +324,8 @@ const MessageInput = ({ ticketStatus }) => {
     }
   };
 
-  const handleLoadAnswer = async (value) => {
-    if (value && value.indexOf("/") === 0) {
+  const handleLoadAnswer = async (m) => {
+    if (m.indexOf("/") === 0) {
       try {
         const { data } = await api.get("/answers/", {
           params: { searchParam: inputMessage.substring(1) },
@@ -630,14 +630,14 @@ const MessageInput = ({ ticketStatus }) => {
             />
             {typeBar ? (
               <ul className={classes.messageAnswersWrapper}>
-                {answers.map((value, index) => {
+                {answers.map((m, index) => {
                   return (
                     <li
                       className={classes.messageAnswersWrapperItem}
-                      key={index}
+                      key={(m.message, index)}
                     >
-                      <a onClick={() => handleAnswersClick(value.message)}>
-                        {value.message}
+                      <a onClick={() => handleAnswersClick(m.message)}>
+                        {`${m.shortcut} - ${m.message}`}
                       </a>
                     </li>
                   );

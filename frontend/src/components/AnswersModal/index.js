@@ -77,7 +77,7 @@ const AnswerSchema = Yup.object().shape({
       8,
       "O message é muito curto, informe uma mensagem no mínimo 8 caracteres"
     )
-    .max(20000, "Informe uma mensagem de no máximo 20.000 caracteres")
+    .max(90000, "Informe uma mensagem de no máximo 90.000 caracteres")
     .required("Required"),
 });
 
