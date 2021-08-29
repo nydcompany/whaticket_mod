@@ -80,7 +80,7 @@ const verifyMediaMessage = async (
       media.filename = `${new Date().getTime()}.${ext}`;
     }
   */
-  let originalFilename = media.filename ? `-${media.filename}` : ''
+  let originalFilename = media.filename ? `-${media.filename}` : "";
   // Always write a random filename
   const ext = media.mimetype.split("/")[1].split(";")[0];
   media.filename = `${new Date().getTime()}${originalFilename}.${ext}`;
@@ -203,6 +203,8 @@ const isValidMsg = (msg: WbotMessage): boolean => {
     msg.type === "image" ||
     msg.type === "document" ||
     msg.type === "vcard" ||
+    // msg.type === "location" ||
+    // msg.type === "multi_vcard" ||
     msg.type === "sticker"
   )
     return true;

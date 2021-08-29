@@ -128,6 +128,7 @@ const messages = {
         buttons: {
           import: "Importar Contatos",
           add: "Adicionar Contato",
+          addTags: "Adicionar Tags",
         },
         table: {
           avatar: "Avatar",
@@ -135,6 +136,7 @@ const messages = {
           whatsapp: "WhatsApp",
           email: "Email",
           actions: "Ações",
+          tags: "Tags",
         },
       },
       forwardMessage: {
@@ -144,6 +146,69 @@ const messages = {
         title: "Encaminhar mensagem",
         buttons: {
           ok: "Encaminhar",
+        },
+      },
+      shortcut_messages: {
+        title: "Mensagens Pré-definidas",
+        toasts: {
+          deleted: "Mensagem pré-definida excluída com sucesso!",
+        },
+        searchPlaceholder: "Pesquisar...",
+        confirmationModal: {
+          deleteTitle: "Deletar ",
+          deleteMessage:
+            "Tem certeza que deseja deletar esta mensagem pré-definida?",
+        },
+        buttons: {
+          add: "Adicionar Mensagem pré-definida",
+        },
+        table: {
+          name: "Nome",
+          content: "Conteúdo",
+          actions: "Ações",
+        },
+      },
+      scheduled_messages: {
+        title: "Mensagens Programadas",
+        toasts: {
+          deleted: "Mensagem programada excluída com sucesso!",
+        },
+        searchPlaceholder: "Pesquisar...",
+        confirmationModal: {
+          deleteTitle: "Deletar ",
+          deleteMessage:
+            "Tem certeza que deseja deletar esta mensagem programada?",
+        },
+        buttons: {
+          add: "Adicionar Mensagem programada",
+        },
+        table: {
+          date: "Agendada para",
+          content: "Conteúdo",
+          sent: "Enviada em",
+          actions: "Ações",
+          to: "Para",
+        },
+      },
+      tags: {
+        title: "Tags",
+        toasts: {
+          deleted: "Tag excluída com sucesso!",
+        },
+        searchPlaceholder: "Pesquisar...",
+        confirmationModal: {
+          deleteTitle: "Deletar ",
+          deleteMessage: "Tem certeza que deseja deletar esta tag?",
+        },
+        buttons: {
+          add: "Adicionar Tag",
+        },
+        table: {
+          name: "Nome",
+          content: "Conteúdo",
+          actions: "Ações",
+          color: "Cor",
+          contacts: "Número de contatos",
         },
       },
       contactModal: {
@@ -168,6 +233,62 @@ const messages = {
           cancel: "Cancelar",
         },
         success: "Contato salvo com sucesso.",
+      },
+      tagModal: {
+        title: {
+          add: "Adicionar tag",
+          edit: "Editar tag",
+        },
+        form: {
+          mainInfo: "Dados da tag",
+          name: "Nome",
+          color: "Cor",
+        },
+        buttons: {
+          okAdd: "Adicionar",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+        },
+        success: "Tag salva com sucesso.",
+      },
+      shortcutMessageModal: {
+        title: {
+          add: "Adicionar mensagem pré-definida",
+          edit: "Editar mensagem pré-definida",
+        },
+        form: {
+          mainInfo: "Dados da mensagem pré-definida",
+          extraInfo: "Informações adicionais",
+          name: "Nome",
+          content: "Conteúdo",
+        },
+        buttons: {
+          addExtraInfo: "Adicionar informação",
+          okAdd: "Adicionar",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+        },
+        success: "Mensagem pré-definida salva com sucesso.",
+      },
+      scheduledMessageModal: {
+        title: {
+          add: "Adicionar mensagem programada",
+          edit: "Editar mensagem programada",
+        },
+        form: {
+          mainInfo: "Dados da mensagem programada",
+          extraInfo: "Informações adicionais",
+          date: "Programar para:",
+          content: "Conteúdo",
+          contactId: "Contato",
+        },
+        buttons: {
+          addExtraInfo: "Adicionar informação",
+          okAdd: "Adicionar",
+          okEdit: "Salvar",
+          cancel: "Cancelar",
+        },
+        success: "Mensagem programada salva com sucesso.",
       },
       queueModal: {
         title: {
@@ -229,7 +350,7 @@ const messages = {
         success: "Resposta rápida salva com sucesso.",
       },
       chat: {
-        noTicketMessage: "Selecione um atendimento para iniciar uma conversar.",
+        noTicketMessage: "Selecione um atendimento para começar a conversar.",
       },
       ticketsManager: {
         buttons: {
@@ -297,15 +418,19 @@ const messages = {
           administration: "Administração",
           users: "Usuários",
           settings: "Configurações",
+          shortcut_messages: "Mensagens",
+          scheduled_messages: "Agendamento",
+          tags: "Tags",
         },
         appBar: {
           config: {
             title: "WhaTicket",
             copyright: "Canove",
             pagecopyright: "https://github.com/canove",
+            version: "1.0.1",
           },
           user: {
-            profile: "Perfil",
+            profile: "Meu Perfil",
             logout: "Sair",
           },
         },
@@ -327,7 +452,7 @@ const messages = {
         confirmationModal: {
           deleteTitle: "Excluir",
           deleteMessage:
-            "Você tem certeza? Essa ação não pode ser revertida! Os atendimentos desse setor continuarão existindo, mas não terão mais nenhuma setor atribuído.",
+            "Você tem certeza? Essa ação não pode ser revertida! Os atendimentos desse setor continuarão existindo, mas não terão mais nenhum setor atribuído.",
         },
       },
       queueSelect: {
@@ -404,6 +529,42 @@ const messages = {
               disabled: "Desativado",
             },
           },
+          groupMedia: {
+            name: "Agrupar mídias (imagens e vídeos)",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          showContacts: {
+            name: "Mostrar seção Contatos para todos",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado (somente administrador)",
+            },
+          },
+          showTags: {
+            name: "Mostrar seção Tags para todos",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado (somente administrador)",
+            },
+          },
+          showConnections: {
+            name: "Mostrar seção Conexões para todos",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado (somente administrador)",
+            },
+          },
+          showResolved: {
+            name: "Mostrar Todos os Atendimentos Resolvidos para todos",
+            options: {
+              enabled: "Ativado",
+              disabled:
+                "Desativado (cada atendente vê apenas os seus atendimentos)",
+            },
+          },
         },
       },
       messagesList: {
@@ -414,6 +575,7 @@ const messages = {
             resolve: "Finalizar",
             reopen: "Reabrir",
             accept: "Atender",
+            closed: "Finalizado",
           },
         },
       },
@@ -421,7 +583,7 @@ const messages = {
         placeholderOpen:
           "Digite uma mensagem ou tecle ''/'' para utilizar as respostas rápidas cadastrada",
         placeholderClosed:
-          "Reabra ou clique em atender para enviar uma mensagem nesse atendimento.",
+          "Reabra ou clique em atender nesse atendimento para enviar uma mensagem .",
         placeholderInAttendance: "Este Atendimento já pertence a outro usuário",
         signMessage: "Assinar",
       },
@@ -435,6 +597,11 @@ const messages = {
       ticketOptionsMenu: {
         delete: "Excluir",
         transfer: "Transferir",
+        return: "Retornar",
+        resolve: "Finalizar",
+        reopen: "Reabrir",
+        accept: "Atender",
+        closed: "Finalizado",
         confirmationModal: {
           title: "Excluir o atendimento do contato",
           message:
@@ -459,6 +626,8 @@ const messages = {
           title: "Apagar mensagem?",
           message: "Esta ação não pode ser revertida.",
         },
+        download_all: "Baixar Todos",
+        download_zip: "Baixar arquivo zip",
       },
       attachments: {
         image: {

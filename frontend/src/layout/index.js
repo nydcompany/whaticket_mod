@@ -1,30 +1,28 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import openSocket from "socket.io-client";
 import clsx from "clsx";
 
 import {
   makeStyles,
   Drawer,
-  AppBar,
-  Toolbar,
   List,
-  Typography,
   Divider,
-  MenuItem,
   IconButton,
-  Menu,
 } from "@material-ui/core";
 
-import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ArrowUpIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownIcon from "@material-ui/icons/ArrowDownward";
 
 import MainListItems from "./MainListItems";
-import NotificationsPopOver from "../components/NotificationsPopOver";
 import UserModal from "../components/UserModal";
 import { AuthContext } from "../context/Auth/AuthContext";
 import BackdropLoading from "../components/BackdropLoading";
-import { i18n } from "../translate/i18n";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import Hidden from "@material-ui/core/Hidden";
+
+import logoImg from "../assets/logotipo.png";
 
 const drawerWidth = 240;
 
@@ -32,9 +30,21 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     height: "100vh",
-    // background: "green",
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+    },
   },
-
+  avatar: {
+    width: "100%",
+  },
+  logo: {
+    width: "70%",
+    height: "auto",
+    [theme.breakpoints.down("sm")]: {
+      width: "auto",
+      height: "100%",
+    },
+  },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
   },
@@ -44,7 +54,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     padding: "0 8px",
     minHeight: "48px",
-    background: "#fff",
+    [theme.breakpoints.down("sm")]: {
+      height: "48px",
+    },
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -78,6 +90,9 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   drawerPaperClose: {
     overflowX: "hidden",
@@ -85,9 +100,12 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    width: theme.spacing(5),
+    width: theme.spacing(7),
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(7),
+      width: theme.spacing(9),
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
     },
   },
   appBarSpacer: {
@@ -96,49 +114,52 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flex: 1,
     overflow: "auto",
-    // background: "#000",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    // background: "#000",
+    [theme.breakpoints.down("sm")]: {
+      height: "calc(100vh - 50px)",
+    },
   },
   paper: {
-    padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-    // background: "#000",
   },
+  mainListItemsContainer: {
+    [theme.breakpoints.down("sm")]: {
+      display: "none",
+    },
+  },
+  mainListItemsContainerClose: {},
 }));
 
 const LoggedInLayout = ({ children }) => {
   const classes = useStyles();
   const [userModalOpen, setUserModalOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { handleLogout, loading } = useContext(AuthContext);
+  const { loading } = useContext(AuthContext);
   const [drawerOpen, setDrawerOpen] = useLocalStorage("drawerOpen", true);
   const { user } = useContext(AuthContext);
+  const [notifications, setNotifications] = useState([]);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-    setMenuOpen(true);
-  };
+  useEffect(() => {
+    const socket = openSocket(process.env.REACT_APP_BACKEND_URL);
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-    setMenuOpen(false);
-  };
+    socket.on(`notification_${user.id}`, (data) => {
+      if (data.action === "new") {
+        setNotifications(notifications);
+      }
+    });
 
-  const handleOpenUserModal = () => {
-    setUserModalOpen(true);
-    handleCloseMenu();
-  };
+    return () => {
+      socket.disconnect();
+    };
+    //eslint-disable-next-line
+  }, []);
 
-  const handleClickLogout = () => {
-    handleCloseMenu();
-    handleLogout();
+  const handleMenuItemClick = () => {
+    //eslint-disable-next-line
+    const { innerWidth: width, innerHeight: height } = window;
+    if (width <= 600) {
+      setDrawerOpen(false);
+    }
   };
 
   if (loading) {
@@ -158,12 +179,26 @@ const LoggedInLayout = ({ children }) => {
         open={drawerOpen}
       >
         <div className={classes.toolbarIcon}>
+          {/* eslint-disable-next-line */}
+          <img src={logoImg} className={classes.logo} alt="image" />
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
-            <ChevronLeftIcon />
+            <Hidden only={["sm", "xs"]}>
+              {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </Hidden>
+            <Hidden smUp>
+              {drawerOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
+            </Hidden>
           </IconButton>
         </div>
         <Divider />
-        <List>
+        <List
+          onClick={() => handleMenuItemClick()}
+          className={
+            drawerOpen
+              ? classes.mainListItemsContainerClose
+              : classes.mainListItemsContainer
+          }
+        >
           <MainListItems />
         </List>
         <Divider />
@@ -173,76 +208,7 @@ const LoggedInLayout = ({ children }) => {
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
       />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
-        // color={process.env.NODE_ENV === "development" ? "inherit" : "primary"}
-        color="primary"
-      >
-        <Toolbar variant="dense" className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => setDrawerOpen(!drawerOpen)}
-            className={clsx(
-              classes.menuButton,
-              drawerOpen && classes.menuButtonHidden
-            )}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            {i18n.t("mainDrawer.appBar.config.title")}
-          </Typography>
-          {user.id && <NotificationsPopOver />}
-
-          <div>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={menuOpen}
-              onClose={handleCloseMenu}
-            >
-              <MenuItem onClick={handleOpenUserModal}>
-                {i18n.t("mainDrawer.appBar.user.profile")}
-              </MenuItem>
-              <MenuItem onClick={handleClickLogout}>
-                {i18n.t("mainDrawer.appBar.user.logout")}
-              </MenuItem>
-            </Menu>
-          </div>
-        </Toolbar>
-      </AppBar>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-
-        {children ? children : null}
-      </main>
+      <main className={classes.content}>{children ? children : null}</main>
     </div>
   );
 };

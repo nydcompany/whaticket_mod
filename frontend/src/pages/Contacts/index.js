@@ -35,6 +35,9 @@ import MainContainer from "../../components/MainContainer";
 import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../../components/Can";
+import { SettingsContext } from "../../context/Settings/SettingsContext";
+
+import Checkbox from "@material-ui/core/Checkbox";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
@@ -56,6 +59,7 @@ const reducer = (state, action) => {
   if (action.type === "UPDATE_CONTACTS") {
     const contact = action.payload;
     const contactIndex = state.findIndex((c) => c.id === contact.id);
+    console.log(contact);
 
     if (contactIndex !== -1) {
       state[contactIndex] = contact;
@@ -83,9 +87,18 @@ const reducer = (state, action) => {
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
-    padding: theme.spacing(1),
+    borderRadius: 0,
     overflowY: "scroll",
     ...theme.scrollbarStyles,
+  },
+  tag: {
+    padding: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    color: "#FFF",
+    textAlign: "center",
+    marginRight: 10,
+    borderRadius: 5,
   },
   iconActions: {
     margin: theme.spacing(1),
@@ -103,6 +116,7 @@ const Contacts = () => {
   const history = useHistory();
 
   const { user } = useContext(AuthContext);
+  const { isActive } = useContext(SettingsContext);
 
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -110,18 +124,57 @@ const Contacts = () => {
   const [contacts, dispatch] = useReducer(reducer, []);
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  // const [addTagModalOpen, setAddTagModalOpen] = useState(false);
   const [deletingContact, setDeletingContact] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [checked, setChecked] = useState([]);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
   }, [searchParam]);
 
+  const settingIsActive = (key) => {
+    return isActive(key);
+  };
+
+  const handleToggle = (event) => {
+    const currentIndex = checked.indexOf(event.target.value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(event.target.value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
+  const toggleAll = (event) => {
+    if (event.target.checked) {
+      checkAll();
+    } else {
+      uncheckAll();
+    }
+  };
+  const checkAll = () => {
+    setChecked(
+      contacts.map((element) => {
+        return "" + element.id;
+      })
+    );
+  };
+
+  const uncheckAll = () => {
+    setChecked([]);
+  };
+
   useEffect(() => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
+      if (user.profile !== "admin" && !settingIsActive("showContacts")) return;
       const fetchContacts = async () => {
         try {
           const { data } = await api.get("/contacts/", {
@@ -137,6 +190,7 @@ const Contacts = () => {
       fetchContacts();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
+    // eslint-disable-next-line
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
@@ -253,40 +307,44 @@ const Contacts = () => {
           ? `${i18n.t("contacts.confirmationModal.deleteMessage")}`
           : `${i18n.t("contacts.confirmationModal.importMessage")}`}
       </ConfirmationModal>
-      <MainHeader>
-        <Title>{i18n.t("contacts.title")}</Title>
-        <MainHeaderButtonsWrapper>
-          <TextField
-            placeholder={i18n.t("contacts.searchPlaceholder")}
-            type="search"
-            value={searchParam}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon style={{ color: "gray" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Fab
-            variant="contained"
-            color="primary"
-            title={i18n.t("contacts.buttons.import")}
-            onClick={(e) => setConfirmOpen(true)}
-          >
-            <ImportContactsIcon />
-          </Fab>
-          <Fab
-            variant="contained"
-            color="primary"
-            title={i18n.t("contacts.buttons.add")}
-            onClick={handleOpenContactModal}
-          >
-            <AddIcon />
-          </Fab>
-        </MainHeaderButtonsWrapper>
-      </MainHeader>
+      {user.profile === "admin" || settingIsActive("showContacts") ? (
+        <MainHeader>
+          <Title>{i18n.t("contacts.title")}</Title>
+          <MainHeaderButtonsWrapper>
+            <TextField
+              placeholder={i18n.t("contacts.searchPlaceholder")}
+              type="search"
+              value={searchParam}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon style={{ color: "gray" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Fab
+              variant="contained"
+              color="primary"
+              title={i18n.t("contacts.buttons.import")}
+              onClick={(e) => setConfirmOpen(true)}
+            >
+              <ImportContactsIcon />
+            </Fab>
+            <Fab
+              variant="contained"
+              color="primary"
+              title={i18n.t("contacts.buttons.add")}
+              onClick={handleOpenContactModal}
+            >
+              <AddIcon />
+            </Fab>
+          </MainHeaderButtonsWrapper>
+        </MainHeader>
+      ) : (
+        <></>
+      )}
       <Paper
         className={classes.mainPaper}
         variant="outlined"
@@ -295,6 +353,9 @@ const Contacts = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox onChange={toggleAll} />
+              </TableCell>
               <TableCell padding="checkbox" />
               <TableCell>{i18n.t("contacts.table.name")}</TableCell>
               <TableCell align="center">
@@ -312,6 +373,13 @@ const Contacts = () => {
             <>
               {contacts.map((contact) => (
                 <TableRow key={contact.id}>
+                  <TableCell>
+                    <Checkbox
+                      value={contact.id}
+                      checked={checked.indexOf("" + contact.id) !== -1}
+                      onChange={handleToggle}
+                    />
+                  </TableCell>
                   <TableCell style={{ paddingRight: 0 }}>
                     {<Avatar src={contact.profilePicUrl} />}
                   </TableCell>

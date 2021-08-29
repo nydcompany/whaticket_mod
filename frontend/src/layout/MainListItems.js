@@ -8,18 +8,23 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Divider from "@material-ui/core/Divider";
 import { Badge } from "@material-ui/core";
 import DashboardOutlinedIcon from "@material-ui/icons/DashboardOutlined";
-import ChatIcon from "@material-ui/icons/Chat";
-import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet";
-import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
+import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ContactPhoneOutlinedIcon from "@material-ui/icons/ContactPhoneOutlined";
 import AccountTreeOutlinedIcon from "@material-ui/icons/AccountTreeOutlined";
 import QuestionAnswerOutlinedIcon from "@material-ui/icons/QuestionAnswerOutlined";
+import UserModal from "../components/UserModal";
+import BackdropLoading from "../components/BackdropLoading";
+import NotificationsPopOver from "../components/NotificationsPopOver";
+
+import AccountIcon from "@material-ui/icons/AccountCircle";
+import ExitIcon from "@material-ui/icons/ExitToApp";
 
 import { i18n } from "../translate/i18n";
 import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext";
 import { AuthContext } from "../context/Auth/AuthContext";
 import { Can } from "../components/Can";
+import { SettingsContext } from "../context/Settings/SettingsContext";
 
 function ListItemLink(props) {
   const { icon, primary, to, className } = props;
@@ -45,7 +50,22 @@ function ListItemLink(props) {
 const MainListItems = () => {
   const { whatsApps } = useContext(WhatsAppsContext);
   const { user } = useContext(AuthContext);
+  const { isActive } = useContext(SettingsContext);
   const [connectionWarning, setConnectionWarning] = useState(false);
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const { handleLogout, loading } = useContext(AuthContext);
+
+  const handleOpenUserModal = () => {
+    setUserModalOpen(true);
+  };
+
+  const handleClickLogout = () => {
+    handleLogout();
+  };
+
+  const settingIsActive = (key) => {
+    return isActive(key);
+  };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -69,37 +89,54 @@ const MainListItems = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [whatsApps]);
 
+  if (loading) {
+    return <BackdropLoading />;
+  }
+
   return (
     <div>
+      <UserModal
+        open={userModalOpen}
+        onClose={() => setUserModalOpen(false)}
+        userId={user?.id}
+      />
       <ListItemLink
         to="/"
         primary="Dashboard"
         icon={<DashboardOutlinedIcon />}
       />
+      {user.profile === "admin" || settingIsActive("showConnections") ? (
+        <ListItemLink
+          to="/connections"
+          primary={i18n.t("mainDrawer.listItems.connections")}
+          icon={
+            <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+              <SyncAltIcon />
+            </Badge>
+          }
+        />
+      ) : (
+        <></>
+      )}
+      <ListItemLink
+        to="/tickets"
+        primary={i18n.t("mainDrawer.listItems.tickets")}
+        icon={user.id && <NotificationsPopOver />}
+      />
+
+      {user.profile === "admin" || settingIsActive("showContacts") ? (
+        <ListItemLink
+          to="/contacts"
+          primary={i18n.t("mainDrawer.listItems.contacts")}
+          icon={<ContactPhoneOutlinedIcon />}
+        />
+      ) : (
+        <></>
+      )}
       <ListItemLink
         to="/answers"
         primary={i18n.t("mainDrawer.listItems.answers")}
         icon={<QuestionAnswerOutlinedIcon />}
-      />
-      <ListItemLink
-        to="/connections"
-        primary={i18n.t("mainDrawer.listItems.connections")}
-        icon={
-          <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-            <SettingsEthernetIcon />
-          </Badge>
-        }
-      />
-      <ListItemLink
-        to="/tickets"
-        primary={i18n.t("mainDrawer.listItems.tickets")}
-        icon={<ChatIcon />}
-      />
-
-      <ListItemLink
-        to="/contacts"
-        primary={i18n.t("mainDrawer.listItems.contacts")}
-        icon={<ContactPhoneOutlinedIcon />}
       />
       <Can
         role={user.profile}
@@ -120,14 +157,28 @@ const MainListItems = () => {
               primary={i18n.t("mainDrawer.listItems.queues")}
               icon={<AccountTreeOutlinedIcon />}
             />
-            <ListItemLink
-              to="/settings"
-              primary={i18n.t("mainDrawer.listItems.settings")}
-              icon={<SettingsOutlinedIcon />}
-            />
           </>
         )}
       />
+
+      <Divider />
+      <li>
+        <ListItem button onClick={handleOpenUserModal}>
+          <ListItemIcon>
+            <AccountIcon />
+          </ListItemIcon>
+          <ListItemText primary={i18n.t("mainDrawer.appBar.user.profile")} />
+        </ListItem>
+      </li>
+
+      <li>
+        <ListItem button onClick={handleClickLogout}>
+          <ListItemIcon>
+            <ExitIcon />
+          </ListItemIcon>
+          <ListItemText primary={i18n.t("mainDrawer.appBar.user.logout")} />
+        </ListItem>
+      </li>
     </div>
   );
 };

@@ -21,6 +21,7 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
 import { Button } from "@material-ui/core";
+// import SelectTags from "../SelectTags";
 
 const useStyles = makeStyles((theme) => ({
   ticketsWrapper: {
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
+    borderRadius: 0,
   },
 
   tabsHeader: {
@@ -89,11 +91,13 @@ const TicketsManager = () => {
   const [showAllTickets, setShowAllTickets] = useState(false);
   const searchInputRef = useRef();
   const { user } = useContext(AuthContext);
+  // const [tagIds, setTagIds] = useState([]);
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 
   useEffect(() => {
+    // setTagIds([]);
     if (tab === "search") {
       searchInputRef.current.focus();
     }
@@ -120,6 +124,14 @@ const TicketsManager = () => {
   const handleChangeTab = (e, newValue) => {
     setTab(newValue);
   };
+
+  // const handleChangeTags = (changedTags) => {
+  //   setTagIds(
+  //     changedTags.map((tag) => {
+  //       return tag.value;
+  //     })
+  //   );
+  // };
 
   return (
     <Paper elevation={0} variant="outlined" className={classes.ticketsWrapper}>
@@ -207,11 +219,19 @@ const TicketsManager = () => {
           onChange={(values) => setSelectedQueueIds(values)}
         />
       </Paper>
+      {/* {tab == "search" ? (
+        <Paper>
+          <SelectTags onChange={handleChangeTags}></SelectTags>
+        </Paper>
+      ) : (
+        <></>
+      )} */}
       <TabPanel value={tab} name="open" className={classes.ticketsWrapper}>
         <TicketsList
           status="open"
           showAll={showAllTickets}
           selectedQueueIds={selectedQueueIds}
+          // selectedTagIds={tagIds}
         />
         <TicketsList status="pending" selectedQueueIds={selectedQueueIds} />
       </TabPanel>
@@ -220,6 +240,7 @@ const TicketsManager = () => {
           status="closed"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          // selectedTagIds={tagIds}
         />
       </TabPanel>
       <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
@@ -227,6 +248,7 @@ const TicketsManager = () => {
           searchParam={searchParam}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          // selectedTagIds={tagIds}
         />
       </TabPanel>
     </Paper>

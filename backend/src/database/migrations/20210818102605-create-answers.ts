@@ -10,15 +10,15 @@ module.exports = {
         allowNull: false
       },
       shortcut: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
       },
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
       },
       message: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
       },
       createdAt: {

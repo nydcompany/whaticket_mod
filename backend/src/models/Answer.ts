@@ -1,6 +1,7 @@
 import {
   Table,
   Column,
+  DataType,
   CreatedAt,
   UpdatedAt,
   Model,
@@ -15,13 +16,13 @@ class Answer extends Model<Answer> {
   @Column
   id: number;
 
-  @Column
+  @Column(DataType.TEXT)
   shortcut: string;
 
-  @Column
+  @Column(DataType.TEXT)
   title: string;
 
-  @Column
+  @Column(DataType.TEXT)
   message: string;
 
   @CreatedAt

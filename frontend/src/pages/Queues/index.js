@@ -32,7 +32,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
-    padding: theme.spacing(1),
+    borderRadius: 0,
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
@@ -158,7 +158,7 @@ const Queues = () => {
   const handleDeleteQueue = async (queueId) => {
     try {
       await api.delete(`/queue/${queueId}`);
-      toast.success(i18n.t("Queue deleted successfully!"));
+      toast.success(i18n.t("Setor excluído com sucesso!"));
     } catch (err) {
       toastError(err);
     }

@@ -39,16 +39,16 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  title: {
+    textAlign: "center",
+    marginTop: "5%",
   },
 }));
 
@@ -72,9 +72,9 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <img src={logoImg} style={{ width: "100%" }} alt="Logo" />
-
         <form className={classes.form} noValidate onSubmit={handlSubmit}>
+          <img src={logoImg} style={{ width: "100%" }} alt="Logo" />
+
           <TextField
             variant="outlined"
             margin="normal"

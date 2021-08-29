@@ -175,7 +175,6 @@ const useStyles = makeStyles((theme) => ({
     color: "#6bcbef",
     fontWeight: 500,
   },
-
   messageAnswersWrapper: {
     margin: 0,
     position: "absolute",
@@ -324,8 +323,8 @@ const MessageInput = ({ ticketStatus }) => {
     }
   };
 
-  const handleLoadAnswer = async (m) => {
-    if (m.indexOf("/") === 0) {
+  const handleLoadAnswer = async (value) => {
+    if (value && value.indexOf("/") === 0) {
       try {
         const { data } = await api.get("/answers/", {
           params: { searchParam: inputMessage.substring(1) },
@@ -630,14 +629,15 @@ const MessageInput = ({ ticketStatus }) => {
             />
             {typeBar ? (
               <ul className={classes.messageAnswersWrapper}>
-                {answers.map((m, index) => {
+                {answers.map((value, index) => {
                   return (
                     <li
                       className={classes.messageAnswersWrapperItem}
-                      key={(m.message, index)}
+                      key={index}
                     >
-                      <a onClick={() => handleAnswersClick(m.message)}>
-                        {`${m.shortcut} - ${m.message}`}
+                      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                      <a onClick={() => handleAnswersClick(value.message)}>
+                        {`${value.shortcut} - ${value.message}`}
                       </a>
                     </li>
                   );
