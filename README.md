@@ -6,6 +6,32 @@
 
 # WhaTicket
 
+# **Demo**
+
+Note: It is not a good idea to sync your WhatsApp account in this demo environment, as all your incoming messages will be stored in a database and will be accessible to anyone who accesses this URL and creates an account.
+
+That said, there's not much to test without syncing a WhatsApp account, as adding contacts or tickets simply generates an error if the app isn't synced with WhatsApp.
+
+In the meantime, if you want to test it, remember to log out of the session and delete all tickets and contacts after your tests.
+
+Feel free to test the account:
+
+@canove original design: https://github.com/canove/whaticket:
+
+link: https://whaticket.cmawhats.online/login
+
+or
+ 
+the copy of the project with some changes already made:
+
+link: https://whaticketmod.cmawhats.online/login
+
+Data to log into any of the projects above:
+User: admin@admin.com
+password: admin
+
+**Don't forget to contribute to the project.**
+
 **NOTE**: The new version of whatsapp-web.js required Node 14. Upgrade your installations to keep using it.
 
 A _very simple_ Ticket System based on WhatsApp messages.
