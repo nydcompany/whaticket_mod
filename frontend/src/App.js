@@ -12,11 +12,11 @@ const App = () => {
     {
       scrollbarStyles: {
         "&::-webkit-scrollbar": {
-          width: "15px",
+          width: "8px",
           height: "8px",
         },
         "&::-webkit-scrollbar-thumb": {
-          boxShadow: "inset 0 0 6px rgba(0, 0, 0, 0.7)",
+          boxShadow: "inset 0 0 6px rgba(0, 0, 0, 0.3)",
           backgroundColor: "#e8e8e8",
         },
       },

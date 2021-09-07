@@ -1,13 +1,15 @@
 import React, { useState, useContext } from "react";
 
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import {
+  Button,
+  CssBaseline,
+  TextField,
+  Link,
+  Box,
+  Typography,
+  makeStyles,
+  Container,
+} from "@material-ui/core";
 
 import { i18n } from "../../translate/i18n";
 
@@ -45,10 +47,6 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-  },
-  title: {
-    textAlign: "center",
-    marginTop: "5%",
   },
 }));
 
@@ -112,7 +110,7 @@ const Login = () => {
           </Button>
         </form>
       </div>
-      <Box mt={1}>
+      <Box mt={2}>
         <Copyright />
       </Box>
     </Container>

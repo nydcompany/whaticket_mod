@@ -3,7 +3,6 @@ import { Route as RouterRoute, Redirect } from "react-router-dom";
 
 import { AuthContext } from "../context/Auth/AuthContext";
 import BackdropLoading from "../components/BackdropLoading";
-import { SettingsContext } from "../context/Settings/SettingsContext";
 
 const Route = ({
   component: Component,
@@ -12,12 +11,6 @@ const Route = ({
   ...rest
 }) => {
   const { isAuth, loading } = useContext(AuthContext);
-  const { user } = useContext(AuthContext);
-  const { isActive } = useContext(SettingsContext);
-
-  if (checkSetting && user.profile !== "admin" && !isActive(checkSetting)) {
-    return <></>;
-  }
 
   if (!isAuth && isPrivate) {
     return (

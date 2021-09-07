@@ -16,6 +16,7 @@ import QuestionAnswerOutlinedIcon from "@material-ui/icons/QuestionAnswerOutline
 import UserModal from "../components/UserModal";
 import BackdropLoading from "../components/BackdropLoading";
 import NotificationsPopOver from "../components/NotificationsPopOver";
+import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 
 import AccountIcon from "@material-ui/icons/AccountCircle";
 import ExitIcon from "@material-ui/icons/ExitToApp";
@@ -24,7 +25,6 @@ import { i18n } from "../translate/i18n";
 import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext";
 import { AuthContext } from "../context/Auth/AuthContext";
 import { Can } from "../components/Can";
-import { SettingsContext } from "../context/Settings/SettingsContext";
 
 function ListItemLink(props) {
   const { icon, primary, to, className } = props;
@@ -47,10 +47,10 @@ function ListItemLink(props) {
   );
 }
 
-const MainListItems = () => {
+const MainListItems = (props) => {
+  const { drawerClose } = props;
   const { whatsApps } = useContext(WhatsAppsContext);
   const { user } = useContext(AuthContext);
-  const { isActive } = useContext(SettingsContext);
   const [connectionWarning, setConnectionWarning] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const { handleLogout, loading } = useContext(AuthContext);
@@ -61,10 +61,6 @@ const MainListItems = () => {
 
   const handleClickLogout = () => {
     handleLogout();
-  };
-
-  const settingIsActive = (key) => {
-    return isActive(key);
   };
 
   useEffect(() => {
@@ -100,39 +96,32 @@ const MainListItems = () => {
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
       />
+      <div onClick={drawerClose}></div>
       <ListItemLink
         to="/"
         primary="Dashboard"
         icon={<DashboardOutlinedIcon />}
       />
-      {user.profile === "admin" || settingIsActive("showConnections") ? (
-        <ListItemLink
-          to="/connections"
-          primary={i18n.t("mainDrawer.listItems.connections")}
-          icon={
-            <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-              <SyncAltIcon />
-            </Badge>
-          }
-        />
-      ) : (
-        <></>
-      )}
+      <ListItemLink
+        to="/connections"
+        primary={i18n.t("mainDrawer.listItems.connections")}
+        icon={
+          <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+            <SyncAltIcon />
+          </Badge>
+        }
+      />
       <ListItemLink
         to="/tickets"
         primary={i18n.t("mainDrawer.listItems.tickets")}
         icon={user.id && <NotificationsPopOver />}
       />
 
-      {user.profile === "admin" || settingIsActive("showContacts") ? (
-        <ListItemLink
-          to="/contacts"
-          primary={i18n.t("mainDrawer.listItems.contacts")}
-          icon={<ContactPhoneOutlinedIcon />}
-        />
-      ) : (
-        <></>
-      )}
+      <ListItemLink
+        to="/contacts"
+        primary={i18n.t("mainDrawer.listItems.contacts")}
+        icon={<ContactPhoneOutlinedIcon />}
+      />
       <ListItemLink
         to="/answers"
         primary={i18n.t("mainDrawer.listItems.answers")}
@@ -156,6 +145,11 @@ const MainListItems = () => {
               to="/queues"
               primary={i18n.t("mainDrawer.listItems.queues")}
               icon={<AccountTreeOutlinedIcon />}
+            />
+            <ListItemLink
+              to="/settings"
+              primary={i18n.t("mainDrawer.listItems.settings")}
+              icon={<SettingsOutlinedIcon />}
             />
           </>
         )}

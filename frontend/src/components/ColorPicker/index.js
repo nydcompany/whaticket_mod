@@ -1,7 +1,7 @@
 import { Dialog } from "@material-ui/core";
 import React, { useState } from "react";
 
-import { SwatchesPicker } from "react-color";
+import { GithubPicker } from "react-color";
 
 const ColorPicker = ({ onChange, currentColor, handleClose, open }) => {
   const [selectedColor, setSelectedColor] = useState(currentColor);
@@ -17,7 +17,7 @@ const ColorPicker = ({ onChange, currentColor, handleClose, open }) => {
       aria-labelledby="simple-dialog-title"
       open={open}
     >
-      <SwatchesPicker
+      <GithubPicker
         width={"100%"}
         triangle="hide"
         color={selectedColor}
