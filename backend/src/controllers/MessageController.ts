@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-
+import SetTicketMessageIsForwarded from "../helpers/SetTicketMessageIsForwarded";
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
 import { getIO } from "../libs/socket";
 import Message from "../models/Message";
@@ -19,6 +19,8 @@ type MessageData = {
   fromMe: boolean;
   read: boolean;
   quotedMsg?: Message;
+  isForwarded?: boolean;
+  mediaUrl: string;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -30,19 +32,20 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     ticketId
   });
 
-  SetTicketMessagesAsRead(ticket);
+  // SetTicketMessagesAsRead(ticket);
+  await SetTicketMessagesAsRead(ticket);
 
   return res.json({ count, messages, ticket, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { body, quotedMsg }: MessageData = req.body;
-  const medias = req.files as Express.Multer.File[];
+  const { body, quotedMsg, isForwarded, mediaUrl }: MessageData = req.body;
 
+  const medias = req.files as Express.Multer.File[];
   const ticket = await ShowTicketService(ticketId);
 
-  SetTicketMessagesAsRead(ticket);
+  // SetTicketMessagesAsRead(ticket);
 
   if (medias) {
     await Promise.all(
@@ -51,8 +54,32 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       })
     );
   } else {
-    await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    // await SendWhatsAppMessage({ body, ticket, quotedMsg, mediaUrl, isForwarded });
+    const msg = await SendWhatsAppMessage({
+      body,
+      ticket,
+      quotedMsg,
+      mediaUrl,
+      isForwarded
+    });
+    // }
+
+    //   return res.send();
+    // };
+
+    // const msg = await SendWhatsAppMessage({
+    //   mediaUrl,
+    //   isForwarded
+    // });
+
+    if (isForwarded) {
+      setTimeout(() => {
+        SetTicketMessageIsForwarded(msg.id.id);
+      }, 1000);
+    }
   }
+
+  SetTicketMessagesAsRead(ticket);
 
   return res.send();
 };

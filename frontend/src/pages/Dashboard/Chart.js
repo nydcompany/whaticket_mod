@@ -82,7 +82,7 @@ const Chart = () => {
 							position="left"
 							style={{ textAnchor: "middle", fill: theme.palette.text.primary }}
 						>
-							Tickets
+							{i18n.t("dashboard.charts.perDay.titleleft")}
 						</Label>
 					</YAxis>
 					<Bar dataKey="amount" fill={theme.palette.primary.main} />

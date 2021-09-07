@@ -37,9 +37,8 @@ class Message extends Model<Message> {
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
     if (this.getDataValue("mediaUrl")) {
-      return `${process.env.BACKEND_URL}:${
-        process.env.PROXY_PORT
-      }/public/${this.getDataValue("mediaUrl")}`;
+      return `${process.env.BACKEND_URL}:${process.env.PROXY_PORT
+        }/public/${this.getDataValue("mediaUrl")}`;
     }
     return null;
   }
@@ -50,6 +49,10 @@ class Message extends Model<Message> {
   @Default(false)
   @Column
   isDeleted: boolean;
+
+  @Default(false)
+  @Column
+  isForwarded: boolean;
 
   @CreatedAt
   @Column(DataType.DATE(6))
